@@ -1,26 +1,25 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import HomeView from "../views/HomeView.vue";
-import befor from "../views/BforHomeView.vue";
-import favorite from "@/views/FavoriteView.vue";
-
+import signin from "@/views/Log/signInView.vue";
+import signUp from "@/views/Log/signUpView.vue";
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: "/Home/:id",
+    path: "/",
     name: "home",
     component: HomeView,
   },
   {
-    path: "/befor",
-    name: "beforHome",
-    component: befor,
+    path: "/signin",
+    name: "signin",
+    component: signin,
   },
   {
-    path: "/favorite/:id",
-    name: "favorite",
-    component: favorite,
+    path: "/signUp",
+    name: "signUp",
+    component: signUp,
   },
 ];
 

@@ -39,18 +39,50 @@ app.post("/req", async (req, res) => {
     let arr = ["name", "description", "url", "category", "language"];
     const mydata = Filterdata(req.body, arr);
 
-    console.log(mydata);
-
     // const { name, description, url, category, language } = req.body;
     if (all.length <= 0) {
       await collection.insertMany(mydata);
       res.json("ok");
     } else {
-      res.send("no");
+      res.send(all);
     }
   } catch (error) {
-    res.json("no");
+    console.log("error", error);
+    res.json(error);
   }
+});
+app.get("/findFavorite/:id", async (req, res) => {
+  // console.log(req.params.id);
+  try {
+    let ids = req.params.id.split(",");
+    ids = ids.map((e) => {
+      return (e = { _id: new ObjectId(e) });
+    });
+    async function hamara(e) {
+      return (e = await collection.find(e).toArray());
+    }
+    async function lambra(ids) {
+      const res = await Promise.all(ids.map((e) => hamara(e)));
+      return res;
+    }
+    lambra(ids)
+      .then((data) => {
+        console.log("res", data);
+        res.json({ res: true, resData: data });
+      })
+      .catch((e) => console.log("e=>>>", e));
+  } catch (error) {
+    res.json({ error: error });
+  }
+});
+app.get("/:id", async (req, res) => {
+  // console.log("he");
+  // console.log(req.params.id);
+  let id = req.params.id;
+  const idG = { _id: new ObjectId(id) };
+  let catava = await collection.find(idG).toArray();
+  // console.log(catava);
+  res.json({ reso: "ok", catava: catava });
 });
 app.delete("/del", async (req, res) => {
   await collection.deleteMany({});
