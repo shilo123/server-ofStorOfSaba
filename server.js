@@ -25,7 +25,8 @@ app.use(cors());
   const db = connection.db("mydb1");
   collectionU = db.collection("users-and-pratim");
 })();
-
+{
+}
 app.get("/", async (req, res) => {
   res.json(await collection.find({}).toArray());
 });
