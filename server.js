@@ -28,6 +28,7 @@ app.use(cors());
 {
 }
 app.get("/", async (req, res) => {
+  // await collection.updateMany({}, { $set: { imageName: "" } });
   res.json(await collection.find({}).toArray());
 });
 app.get("/findPritim", async (req, res) => {
@@ -46,8 +47,17 @@ app.delete("/delco", async (req, res) => {
 app.delete("/Delhazmana/:id", async (req, res) => {
   let id = req.params.id;
   await collectionU.deleteOne({ _id: new ObjectId(id) });
-
   res.json("ok");
+});
+app.post("/upPr", async (req, res) => {
+  console.log(req.body);
+  let id = req.body.id;
+  let up = req.body.up;
+  await collection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { name: up.upName, des: up.upDes, price: up.upPrice } }
+  );
+  res.json(true);
 });
 app.listen(port, () => {
   console.log(`http://localhost:${port}/`);
