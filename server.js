@@ -19,7 +19,8 @@ const s3 = new AWS.S3({
   secretAccessKey: "l0VinJ7A39RXxPZBIxxlGFGTyBOqLtMbS4TW50cu", // המפתח הפרטי שלך מ-AWS
   region: "us-east-1", // האזור בו הדלי שלך ממוקם, לדוגמה: 'us-west-2'
 });
-
+{
+}
 (async () => {
   const url =
     "mongodb+srv://hazshilo:1234@cluster1.ifbyw.mongodb.net/?tlsAllowInvalidCertificates=true";
