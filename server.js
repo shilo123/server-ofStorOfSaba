@@ -33,8 +33,6 @@ const s3 = new AWS.S3({
   const db = connection.db("mydb1");
   collectionU = db.collection("users-and-pratim");
 })();
-{
-}
 app.get("/", async (req, res) => {
   // await collection.updateMany({}, { $set: { imageName: "" } });
   res.json(await collection.find({}).toArray());
