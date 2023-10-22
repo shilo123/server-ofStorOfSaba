@@ -47,7 +47,8 @@ const mj = mailjetModule.Client.apiConnect(
   "58ab99b62c0faacf8a4bee2f0f050bfa",
   "032a7cab0e5b8c6a5596ba858873e695"
 );
-
+{
+}
 const s3 = new AWS.S3({
   accessKeyId: "AKIASWXFMBWARBBNHUMG", // המפתח הציבורי שלך מ-AWS
   secretAccessKey: "l0VinJ7A39RXxPZBIxxlGFGTyBOqLtMbS4TW50cu", // המפתח הפרטי שלך מ-AWS
