@@ -7,13 +7,47 @@ const ObjectId = require("mongodb").ObjectId;
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const axios = require("axios");
+const mailjetModule = require("node-mailjet");
 const multer = require("multer");
 const AWS = require("aws-sdk");
 // const twilio = require("twilio");
 app.use(bodyParser.json());
 app.use(cors());
+async function sendEmail(receiver, subject, body) {
+  const request = mj.post("send", { version: "v3.1" }).request({
+    Messages: [
+      {
+        From: {
+          Email: "haz.shilo@gmail.com",
+          Name: "שילה",
+        },
+        To: [
+          {
+            Email: receiver,
+            Name: "סבא משה",
+          },
+        ],
+        Subject: subject,
+        HTMLPart: body,
+      },
+    ],
+  });
+  try {
+    const result = await request;
+    return true;
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return false;
+  }
+}
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const mj = mailjetModule.Client.apiConnect(
+  "58ab99b62c0faacf8a4bee2f0f050bfa",
+  "032a7cab0e5b8c6a5596ba858873e695"
+);
+
 const s3 = new AWS.S3({
   accessKeyId: "AKIASWXFMBWARBBNHUMG", // המפתח הציבורי שלך מ-AWS
   secretAccessKey: "l0VinJ7A39RXxPZBIxxlGFGTyBOqLtMbS4TW50cu", // המפתח הפרטי שלך מ-AWS
@@ -36,6 +70,68 @@ const s3 = new AWS.S3({
 app.get("/", async (req, res) => {
   // await collection.updateMany({}, { $set: { imageName: "" } });
   res.json(await collection.find({}).toArray());
+});
+app.post("/sendMail", async (req, res) => {
+  // console.log(req.body);
+  let arrProduct = [];
+  let ishi = req.body.ishi;
+  let ashrai = req.body.ashrai;
+  let str = "";
+  let CoSum = "";
+  req.body.products.forEach((element) => {
+    str += `<p>שם המוצר:${" "}${element.name}</p> <p>מחיר המוצר: ${" "}${
+      element.price
+    }</p><p>כמות:${element.Some}<p>`;
+    CoSum += `${element.price} +`;
+  });
+
+  let PRname = arrProduct.join(",");
+  console.log(PRname);
+  let nose = `הזמנה חדשה מאת: ${ishi.Inputshem}`;
+
+  let mes = `          <html>
+  <body>
+    <h1>פרטים אישיים</h1>
+    <p>שם המזמין: ${ishi.Inputshem}</p>
+    <p>מייל ${ishi.Inputmail}</p>
+    <p>טלפון: ${ishi.Inputphone}</p>
+    <p>כתובת: ${ishi.InputAdress}</p>
+    <h1>פרטי אשראי</h1>
+    <p>מספר כרטיס: ${ashrai.misparCartis}</p>
+    <p>תוקף כרטיס:
+    שנה:${ashrai.validity.year}
+    חודש:${ashrai.validity.month}
+    </p>
+    <p>ספרות אבטחה: ${ashrai.cvv}</p>
+    <p> תעודת זהות של בעל הכרטיס: ${ashrai.tz}</p>
+    <h1>מוצרים</h1>
+    <p>------------------------------------------------------<p>
+    ${str}
+    <p>------------------------------------------------------<p>
+    <h4>חישוב:</h4>
+    <p>${CoSum}</p>
+    <h1>סך הכל</h1>
+  <strong>${req.body.sum}</strong>
+  </body>
+</html>
+`;
+  (async () => {
+    // const receiver = "mozs503.h@gmail.com";
+    const receiver = "haz.shilo@gmail.com";
+    // const receiver = "tzahi556@gmail.com";
+    const subject = nose;
+    const body = mes;
+
+    try {
+      const result = await sendEmail(receiver, subject, body);
+      console.log(result);
+    } catch (error) {
+      console.log(result);
+      console.log("ERRRRRRROR", error);
+    }
+  })();
+
+  res.json("ok");
 });
 app.get("/findPritim", async (req, res) => {
   let data = await collectionU.find({}).toArray();
