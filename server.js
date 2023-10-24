@@ -114,8 +114,8 @@ app.post("/sendMail", async (req, res) => {
 </html>
 `;
   (async () => {
-    // const receiver = "mozs503.h@gmail.com";
-    const receiver = "haz.shilo@gmail.com";
+    const receiver = "mozs503.h@gmail.com";
+    // const receiver = "haz.shilo@gmail.com";
     // const receiver = "tzahi556@gmail.com";
     const subject = nose;
     const body = mes;
