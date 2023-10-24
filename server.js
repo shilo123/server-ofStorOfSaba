@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3005;
 const cors = require("cors");
 let mongo = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectId;
@@ -40,15 +40,12 @@ async function sendEmail(receiver, subject, body) {
     return false;
   }
 }
-
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const mj = mailjetModule.Client.apiConnect(
   "58ab99b62c0faacf8a4bee2f0f050bfa",
   "032a7cab0e5b8c6a5596ba858873e695"
 );
-{
-}
 const s3 = new AWS.S3({
   accessKeyId: "AKIASWXFMBWARBBNHUMG", // המפתח הציבורי שלך מ-AWS
   secretAccessKey: "l0VinJ7A39RXxPZBIxxlGFGTyBOqLtMbS4TW50cu", // המפתח הפרטי שלך מ-AWS
@@ -197,6 +194,35 @@ app.delete("/Delprod/:id", async (req, res) => {
   // console.log(req.params.id);
   await collection.deleteOne({ _id: new ObjectId(req.params.id) });
   res.json("ok");
+});
+app.post("/shinuyTmuna/:id", upload.single("file"), async (req, res) => {
+  // console.log("kriaa");
+  // // console.log(req.file);
+  // console.log(req.params.id);
+  const id = req.params.id;
+  const params = {
+    Bucket: "dagmusht",
+    Key: req.file.originalname,
+    Body: req.file.buffer, // גוף הבקשה אמור להכיל את הקובץ עצמו
+  };
+  async function update(publicUrl) {
+    await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { imageName: publicUrl } }
+    );
+  }
+  s3.upload(params, (err, data) => {
+    if (err) {
+      return res
+        .status(500)
+        .send({ message: "שגיאה בהעלאת הקובץ ל-S3.", error: err.message });
+    }
+    // console.log(data.Location);
+    const publicUrl = `https://${params.Bucket}.s3.amazonaws.com/${params.Key}`;
+    // console.log("publicUrl", publicUrl);
+    update(publicUrl);
+  });
+  res.send("ok");
 });
 app.listen(port, () => {
   console.log(`http://localhost:${port}/`);
