@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 3005;
+const port = process.env.PORT || 3006;
 const cors = require("cors");
 let mongo = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectId;
@@ -13,6 +13,13 @@ const AWS = require("aws-sdk");
 // const twilio = require("twilio");
 app.use(bodyParser.json());
 app.use(cors());
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+//
+//
+//
+//
+//
 async function sendEmail(receiver, subject, body) {
   const request = mj.post("send", { version: "v3.1" }).request({
     Messages: [
@@ -51,6 +58,7 @@ const s3 = new AWS.S3({
   secretAccessKey: "l0VinJ7A39RXxPZBIxxlGFGTyBOqLtMbS4TW50cu", // המפתח הפרטי שלך מ-AWS
   region: "us-east-1", // האזור בו הדלי שלך ממוקם, לדוגמה: 'us-west-2'
 });
+let collection = null;
 (async () => {
   const url =
     "mongodb+srv://hazshilo:1234@cluster1.ifbyw.mongodb.net/?tlsAllowInvalidCertificates=true";
@@ -82,6 +90,14 @@ app.post("/sendMail", async (req, res) => {
     }</p><p>כמות:${element.Some}<p>`;
     CoSum += `${element.price} +`;
   });
+  const shoko = `<h1>פרטי אשראי</h1>
+<p>מספר כרטיס: ${ashrai.misparCartis}</p>
+<p>תוקף כרטיס:
+שנה:${ashrai.validity.year}
+חודש:${ashrai.validity.month}
+</p>
+<p>ספרות אבטחה: ${ashrai.cvv}</p>
+<p> תעודת זהות של בעל הכרטיס: ${ashrai.tz}</p>`;
 
   let PRname = arrProduct.join(",");
   console.log(PRname);
@@ -94,14 +110,6 @@ app.post("/sendMail", async (req, res) => {
     <p>מייל ${ishi.Inputmail}</p>
     <p>טלפון: ${ishi.Inputphone}</p>
     <p>כתובת: ${ishi.InputAdress}</p>
-    <h1>פרטי אשראי</h1>
-    <p>מספר כרטיס: ${ashrai.misparCartis}</p>
-    <p>תוקף כרטיס:
-    שנה:${ashrai.validity.year}
-    חודש:${ashrai.validity.month}
-    </p>
-    <p>ספרות אבטחה: ${ashrai.cvv}</p>
-    <p> תעודת זהות של בעל הכרטיס: ${ashrai.tz}</p>
     <h1>מוצרים</h1>
     <p>------------------------------------------------------<p>
     ${str}
@@ -149,6 +157,8 @@ app.delete("/Delhazmana/:id", async (req, res) => {
   await collectionU.deleteOne({ _id: new ObjectId(id) });
   res.json("ok");
 });
+{
+}
 app.post("/upPr", async (req, res) => {
   console.log(req.body);
   let id = req.body.id;
